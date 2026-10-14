@@ -28,7 +28,7 @@ def prosecute(trace: list[dict], answer: dict, card: dict) -> dict:
 | `split_sentences(text)` | The exact `answer.span:N` split. |
 | `ProsecutionBudget` | A claim accumulator. `try_add(...)` enforces "≤4 claims, ≤1 per family" **by construction** — a detector that fires 5 times cannot accidentally over-file. Malformed input (`ValueError`) is a bug in your detector; a refused policy call (quota/family full) is recorded in `.dropped`, not an error. |
 | `detect_enforcement_failure` | **The one competently-implemented detector.** Read it before writing your own — it is the template. |
-| 16 named `_hook_*` stubs | One per remaining class, each a `return []` with a docstring naming exactly what CONTRACTS.md §6.4 (or the class's own definition, for the 8 adjudicated classes) says it needs. |
+| 16 named `_hook_*` detectors | One per remaining class, implemented conservatively from causal events, returned fields, or final-answer spans. |
 | `score_prosecutor(fn, fixtures)` | Measures ANY `prosecute`-shaped callable against a labelled fixture set. Run it against your own work before you ever point it at an opponent. |
 
 ## Why only one detector ships
@@ -46,7 +46,7 @@ the claim's `argument` make the case.
 
 ## Developing your own detector
 
-1. Pick a stub in `_HOOKS` (say `_hook_wasteful`). Read its docstring — it names the CONTRACTS.md
+1. Pick a detector in `_HOOKS` (say `_hook_wasteful`). Read its docstring — it names the CONTRACTS.md
    rule it must implement, and honestly says what a trace-only prosecutor can and cannot reach.
 2. Implement it returning `[(evidence_refs, argument), ...]`, same shape as
    `detect_enforcement_failure`.
@@ -56,7 +56,7 @@ the claim's `argument` make the case.
    `false_claim_rate` and `precision` to make sure you did not trade recall for false claims.
 
 ```bash
-python -m eval.prosecute            # scores the starter against fixtures/prosecution/labelled/
+python -m eval.prosecute            # scores the prosecutor against fixtures/prosecution/labelled/
 python -m pytest tests/test_prosecute.py -v
 ```
 
@@ -89,16 +89,14 @@ bug in your code, not a measurement of detection quality, but they are still cou
 An `unproven` claim counts toward neither precision's nor recall's numerator — CONTRACTS.md §6.2
 pays it exactly 0 either way, so this mirrors the real economics.
 
-Running the starter (which implements exactly 1 of 17 classes) prints roughly:
+The original starter (which implemented exactly 1 of 17 classes) printed roughly:
 
 ```
 precision: 1.000   recall: 0.059   f1: 0.111   false_claim_rate: 0.000
 ```
 
-**That shape is correct, not a bug to fix**: perfect precision (it never guesses wrong when it does
-file) and low recall (16 of 17 classes are still stubs). If your own numbers ever show HIGH recall
-before you've implemented anything, something is wrong with your changes — check you did not
-accidentally turn a stub into something that always fires.
+The implemented prosecutor should retain perfect precision while lifting recall; every added
+detector must remain silent on the six clean traces and cite the real proof in each near-miss.
 
 ## The fixture set — `fixtures/prosecution/labelled/`
 

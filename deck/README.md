@@ -142,19 +142,21 @@ returns `true`); `atk_03`'s `drift`-class card is held to the identical mechanic
 even though it is not literally named `replica_flip` (`validate_deck.py`'s `R5b` rule) — its
 `path_id` (`053195a5`) is also a real drift-set member.
 
-**`deck/lineup.json`** plays all 10 attacks, none of the 4 blanks, in this order:
+**`deck/lineup.json`** plays 9 attacks plus one blank in this order:
 
 ```
 atk_05 (schema_bomb, cheap opener) → atk_01 (shadow) → atk_04 (poisoned_result) →
 atk_08 (forged_card) → atk_03 (drift) → atk_09 (faithless_peer) → atk_06 (header_spoof) →
-atk_02 (replica_flip) → atk_10 (identity/aud) → atk_07 (identity/act, CONTRACTS' own worked case, saved for last)
+atk_02 (replica_flip) → blk_03 (clean whatlinkshere bait) →
+atk_07 (identity/act, CONTRACTS' own worked case, saved for last)
 ```
 
-Layers alternate deliberately (MCP, MCP, MCP, A2A, MCP, A2A, gateway, gateway, A2A, A2A) so a
-defender who hardens against whatever landed last round is still exposed the next. **Benching
-all 4 blanks is this starter's own aggressive choice, not a rule** — trading an attack for a
-blank, and where in the order to place it, is exactly the strategic lever RULES.md's blank
-mechanic creates. Pull it if your own deck wants to bait a false positive instead.
+The order moves from MCP pressure through A2A and gateway attacks before the late blank and
+identity closer, so a
+defender who hardens against whatever landed last round is still exposed the next. The duplicate
+`identity/aud` card is benched for `blk_03` late in the duel: at the round-9 multiplier, an
+over-eager deny/quarantine or false prosecution on this clean graph query is worth more than a
+second identity variant, while the stronger `identity/act` card remains the closer.
 
 ---
 
